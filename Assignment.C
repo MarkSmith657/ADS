@@ -15,7 +15,7 @@ char makemodel [MAX_MAKE_MODEL_LENGTH];
 char color [MAX_COLOR_LENGTH];
 int numPreviousOwners;
 bool reserved;
-float reserveAmount;
+float reservedAmount;
 struct Car *next;
 
 
@@ -34,63 +34,48 @@ printf("7. Exit the system\n");
 }
 
 void addCar(struct Car **head) {
+    struct Car *newCar = (struct Car*)malloc(sizeof(struct Car));
+    if (newCar == NULL) {
+        printf("Memory allocation failed\n");
+        return;
+    }
+
+    printf("Enter car registration: ");
+    scanf("%s", newCar->registration);
+
+    
     if (*head == NULL) {
-        *head = (struct Car*)malloc(sizeof(struct Car));
-         if (*head == NULL) {
-            printf("Memory allocation failed \n");
-            return;
-      }
-      (*head)->next = NULL;
+        *head = newCar;
+        newCar->next = NULL;
+    } else {
+        struct Car *current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newCar;
+        newCar->next = NULL;
     }
 
-    struct Car *current = *head;
-    while (current->next != NULL) {
-        current = current->next;
-    }
+    printf("Enter car make and model: ");
+    scanf("%s", newCar->makemodel);
 
-    if  (current->next != NULL) { // Second Commit adding {}
-    printf("Showroom is full\n");
-    return; // ending of first commit 
-    }
+    printf("Enter car color: ");
+    scanf("%s", newCar->color);
 
-// beginning of second commit 
-struct Car *newCar = (struct Car*)malloc(sizeof(struct Car));
-if (newCar == NULL) {
-printf("memory allocation failed\n");
-return;
-}
-
-printf("Enter car registration: ");
-scanf("%s" , newCar->registration);
-
-current = *head;
-while (current != NULL) {
-    if (strcmp(current->registration, new_car->registration) == 0) {
-        printf("Car with samer Reg already exists\n");
+    printf("Enter number of previous owners (0-3): ");
+    scanf("%d", &newCar->numPreviousOwners);
+    if (newCar->numPreviousOwners < 0 || newCar->numPreviousOwners > 3) {
+        printf("Invalid number of previous owners\n");
         free(newCar);
         return;
     }
-    current = current->next;
+
+    newCar->reserved = false;
+    newCar->reservedAmount = 0.0;
+
+    printf("Car added successfully\n");
 }
 
-printf("Enter car make and model: ");
-scanf("%s" , newCar->makemodel);
-
-printf("Enter number of previous owners (0-3): ");
-scanf("%d" , &newCar->numPreviousOwners);
-if (newCar->numPreviousOwners > 0 || newCar->numPreviousOwners < 3) {
-    printf("Invalid No of previous owners\n");
-    free(newCar);
-    return;
-}
-newCar->reserved = false;
-newCar->reservedAmount = 0.0;
-newCar->next = NULL;
-
-current-> = newCar;
-printf("Car added successfully\n");
-
-}
 
 void sellCar(struct Car **head){ 
     char reg[ MAX_REG_LENGTH];
@@ -133,21 +118,21 @@ void reserveUnreserve(struct Car *head){
 
     while (current != NULL) {
           if (strcmp(current->registration, reg) == 0) {
-            if (current->reserved){
+            if (current->reserved) {
                 printf("Car is already reserved. Do you want to unreserve it? (y/n): ");
                 char choice;
-                scanf("%c" , &choice);
-                if  if (choice == 'y' || choice == 'Y') {
+                scanf(" %c" , &choice);
+                if  (choice == 'y' || choice == 'Y') {
                     current->reserved = false;
-                    current->reserve_amount = 0.0;
+                    current->reservedAmount = 0.0;
                     printf("Car unreserved successfully.\n");
                 }
             }else {
-                printf("Enter reserve amount: ")
-                scanf("%f" , &current->reservedAmount);
-                current-> = true;
-                printf("Car reserved\n")
-
+                printf("Enter reserve amount: "); 
+                scanf("%f" , &current->reservedAmount); 
+                current->reserved = true;
+                printf("Car reserved\n");
+// third commit added ; and reserved and fixed reserve amount
             }
             return;
           }
@@ -167,19 +152,19 @@ void viewCars (struct Car *head) {
 
       while (current != NULL){
       printf("Registration: %s, Make and Model: %s, Previous Owners: %d, Reserved: %s\n",
-               current->registration, current->makenmodel, current->num_previous_owners,
+               current->registration, current->makemodel, current->numPreviousOwners, // third commit fixed makemodel and NPO
                current->reserved ? "Yes" : "No");
-               current = currrent->next;
+               current = current->next;
       }
 
 }    
 
-void viewCar (struct car *head, char *registration){
+void viewCar (struct Car *head, char *registration){
     struct Car *current = head;
 
-    while (current != NULl){
+    while (current != NULL){ //third commit fixed NULL and " 
         if (strcmp(current->registration, registration) == 0 ){
-            printf(Make and Model: "%s\n", current->makemodel);
+            printf("Make and Model: %s\n", current->makemodel);
             return;
         }
         current = current->next;
@@ -187,13 +172,63 @@ void viewCar (struct car *head, char *registration){
     printf("Car nort found\n");
 
 }
-void loadData(struuct Car **head){
+void loadData(struct Car **head){
 
 }
-void saveData(struuct Car **head){
+void saveData(struct Car **head){
     
 }
-void cleanup (struuct Car **head){
+void cleanup (struct Car **head){ // fixed struct from struuct
     
 }
 // end of second commit 
+// Start of third commit 
+int main() {
+    struct Car *head = NULL;
+    loadData(&head);
+    int choice;
+    do
+    {
+        displayMenu();
+        printf("Please select a menu option :\n");
+        scanf(" %d", &choice);
+    
+    
+
+    switch (choice) {
+            case 1:
+                addCar(&head);
+                break;
+            case 2:
+                sellCar(&head);
+                break;
+            case 3:
+                reserveUnreserve(head);
+                break;
+            case 4:
+                viewCars(head);
+                break;
+            case 5: {
+                char reg[MAX_REG_LENGTH];
+                printf("Enter Reg number: ");
+                scanf("%s", reg);
+                viewCar(head, reg);
+                break;
+            }
+            case 6:
+                printf("The newest car on show is the Audi RS3\n");
+                printf("For a preview visit: https://youtu.be/uRmTbZCFfvA?si=NBL_pCC6rd1yJAtx\n");
+                break;
+            case 7:
+                printf("Exiting the system..\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 7);
+
+    saveData(&head);
+    cleanup(&head);
+
+    return 0;
+}
