@@ -1,26 +1,26 @@
-#include <stdio.h> // beginning of first commit 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
+#include <stdio.h> // beginning of first commit // 
+#include <stdlib.h> // inlcudes library functions like memory allocation and deletion
+#include <stdbool.h> // boolean data types 
+#include <string.h> // allows string manipulation like 'strcmp,
 
 #define MAX_REG_LENGTH 10
 #define MAX_MAKE_MODEL_LENGTH 50
 #define MAX_COLOR_LENGTH 10
-#define MAX_CARS 5
+#define MAX_CARS 5 // define statements used to establish constant values
 
-struct Car {
 
-char registration[MAX_REG_LENGTH];
-char makemodel [MAX_MAKE_MODEL_LENGTH];
-char color [MAX_COLOR_LENGTH];
-int numPreviousOwners;
-bool reserved;
-float reservedAmount;
-struct Car *next;
+struct Car { // definition to define structure named car
 
+char registration[MAX_REG_LENGTH]; // array for cars reg 
+char makemodel [MAX_MAKE_MODEL_LENGTH];  //array for cars make and model
+char color [MAX_COLOR_LENGTH]; // array for cars color
+int numPreviousOwners; // int to store  numPreviousOwners
+bool reserved; // boolean indicating whether car reserv or not 
+float reservedAmount; // amount car is reserved for 
+struct Car *next; // pointer to next car structure allowing creation of linked list of cars 
 
 };
-
+// self explanatory display menu function 
 void displayMenu() { // second commit fixing displaymenu(); and adding ; to printf statements 
 printf("\n MAIN MENU \n");
 printf("1. Add a new car to showroom\n");
@@ -38,15 +38,30 @@ void addCar(struct Car **head) {
     if (newCar == NULL) {
         printf("Memory allocation failed\n");
         return;
+        // allocation of memory for new car using malloc, if allocation fails, error message printed
     }
 
-    printf("Enter car registration: ");
+    printf("Enter car registration: "); // fourth commit added registration error and began adding comments to my fully finished project 
     scanf("%s", newCar->registration);
 
+    struct Car *current = *head;
+    while (current != NULL)
+    {
+        if (strcmp(current->registration, newCar->registration) == 0) {
+            printf("Car with same reg already exists\n");
+            free(newCar);
+            return; 
+            // comparison of two reg using strcmp, if the same error message dispplayed and free new car frees memory for new car
+    }
+    
+    
+        current = current->next; // moves pointer 'current' to next node in list 
+    }
     
     if (*head == NULL) {
         *head = newCar;
         newCar->next = NULL;
+        // if showroom empty set newCar as first car in showroom
     } else {
         struct Car *current = *head;
         while (current->next != NULL) {
@@ -54,6 +69,7 @@ void addCar(struct Car **head) {
         }
         current->next = newCar;
         newCar->next = NULL;
+        // adds new car to end of showroom then sets pointer to new car
     }
 
     printf("Enter car make and model: ");
@@ -70,8 +86,8 @@ void addCar(struct Car **head) {
         return;
     }
 
-    newCar->reserved = false;
-    newCar->reservedAmount = 0.0;
+    newCar->reserved = false; // sets reserved car to false initially 
+    newCar->reservedAmount = 0.0; // and resrved amount to 0
 
     printf("Car added successfully\n");
 }
@@ -80,10 +96,10 @@ void addCar(struct Car **head) {
 void sellCar(struct Car **head){ 
     char reg[ MAX_REG_LENGTH];
     printf("Enter car registration:");
-    scanf("%s" , reg);
+    scanf("%s" , reg); // prompts user to input reg, stores input reg in 'reg' array 
 
-    struct Car *current = *head;
-    struct Car *prev = NULL;
+    struct Car *current = *head; // points to first car
+    struct Car *prev = NULL; // prev initially points to null
 
     while (current != NULL ){
         if(strcmp(current->registration, reg) == 0){
@@ -96,14 +112,18 @@ void sellCar(struct Car **head){
              free(current);
              printf("Car sold !\n");
              return;
+             // enters loop until showroom becomes null, compares reg using strcmp
+             // is car is reserved removes from list, adjusts pointer to skip over current car, if car is first updates to point to next
+             // frees memory allocated for current car and prints message and exits fucntion
         }else {
             printf("Car is not reserved and cannot be sold !\n");
             return;
+            // if car not reserved 
 
         }
     }
     prev = current;
-    current = current->next;
+    current = current->next; // updstes prev to point to current car before moving
 }
 
 printf("Car not found\n");
@@ -141,7 +161,6 @@ void reserveUnreserve(struct Car *head){
     printf("Car not found\n");
 
 }
-
 void viewCars (struct Car *head) {
     if (head == NULL) {
         printf("No cars in showroom\n");
